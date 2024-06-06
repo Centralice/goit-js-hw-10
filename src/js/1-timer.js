@@ -1,10 +1,6 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-let userSelectedDate;
-const startBtn = document.querySelector('[data-start]');
-startBtn.addEventListener('click', handleStart);
-
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -46,13 +42,25 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
+let userSelectedDate;
 
+const startBtn = document.querySelector('[data-start]');
+
+startBtn.addEventListener('click', handleStart);
 
 function handleStart(event) {
   setInterval(() => {
-    console.log(new Date());
+    const userSelectedDateInMS = userSelectedDate.getTime();
+    const currentDateInMS = new Date().getTime();
+    const timeLeft = userSelectedDateInMS - currentDateInMS;
+    const time = convertMs(timeLeft);
+    document.querySelector('[data-days]').textContent = time.days;
+    document.querySelector('[data-hours]').textContent = time.hours;
+    document.querySelector('[data-minutes]').textContent = time.minutes;
+    document.querySelector('[data-seconds]').textContent = time.seconds;
   }, 1000);
 }
+
+
+
+
