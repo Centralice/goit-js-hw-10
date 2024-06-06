@@ -1,6 +1,10 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
+
+
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -13,7 +17,14 @@ const options = {
     const currentDateInMS = new Date().getTime();
 
     if (currentDateInMS > userSelectedDateInMS) {
-      window.alert('Please choose a date in the future!');
+      iziToast.show({
+        title: 'Ay Caramba!',
+        titleColor: '#ffd60a',
+        message: 'Please choose a date in the future',
+        messageColor: '#ffd60a',
+        backgroundColor: '#0077b6',
+        position: 'topRight',
+      });
       startBtn.disabled = true;
     } else {
       startBtn.disabled = false;
@@ -22,6 +33,7 @@ const options = {
 };
 
 flatpickr('#datetime-picker', options);
+const input = document.querySelector('#datetime-picker');
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -45,21 +57,38 @@ function convertMs(ms) {
 let userSelectedDate;
 
 const startBtn = document.querySelector('[data-start]');
+startBtn.disabled = true;
 
 startBtn.addEventListener('click', handleStart);
 
 function handleStart(event) {
-  setInterval(() => {
-    const userSelectedDateInMS = userSelectedDate.getTime();
-    const currentDateInMS = new Date().getTime();
-    const timeLeft = userSelectedDateInMS - currentDateInMS;
-    const time = convertMs(timeLeft);
-    document.querySelector('[data-days]').textContent = time.days;
-    document.querySelector('[data-hours]').textContent = time.hours;
-    document.querySelector('[data-minutes]').textContent = time.minutes;
-    document.querySelector('[data-seconds]').textContent = time.seconds;
-  }, 1000);
+startBtn.disabled = true;
+const intervalID = setInterval(() => {
+  const userSelectedDateInMS = userSelectedDate.getTime();
+  const currentDateInMS = new Date().getTime();
+  const timeLeft = userSelectedDateInMS - currentDateInMS;
+  const time = convertMs(timeLeft);
+  if (timeLeft > 0) {
+    document.querySelector('[data-days]').textContent = String(
+      time.days
+    ).padStart(2, '0');
+    document.querySelector('[data-hours]').textContent = String(
+      time.hours
+    ).padStart(2, '0');
+    document.querySelector('[data-minutes]').textContent = String(
+      time.minutes
+    ).padStart(2, '0');
+    document.querySelector('[data-seconds]').textContent = String(
+      time.seconds
+    ).padStart(2, '0');
+  } else {
+    clearInterval(intervalID);
+    input.value = "";
+  }
+}, 1000);
 }
+    
+
 
 
 
